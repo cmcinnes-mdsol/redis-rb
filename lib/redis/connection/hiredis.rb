@@ -15,7 +15,11 @@ class Redis
         if config[:scheme] == "unix"
           connection.connect_unix(config[:path], connect_timeout)
         elsif config[:scheme] == "rediss" || config[:ssl]
-          raise NotImplementedError, "SSL not supported by hiredis driver"
+          connection.connect(config[:host], config[:port], connect_timeout)
+
+          # I don't think we actually need these, but let's find out.
+          ca, cert, key, servername = Array.new(4) { nil }
+          connection.secure(ca, cert, key, servername)
         else
           connection.connect(config[:host], config[:port], connect_timeout)
         end
